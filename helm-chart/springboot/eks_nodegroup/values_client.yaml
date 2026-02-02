@@ -1,0 +1,43 @@
+replicaCount: 1
+image:
+  repository: public.ecr.aws/w0f5g4k6/client-svc
+  pullPolicy: IfNotPresent
+  tag: ""
+service:
+  type: ClusterIP
+  name: client
+  port: 80
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/group.name: myapp
+  hosts:
+    - host: client.com
+      paths:
+        - path: /
+          pathType: Prefix  #  - secretName: chart-example-tls
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+env:
+  HELLO_SERVICE_URL: "http://hello.default.svc.cluster.local"
+  WORLD_SERVICE_URL: "http://world.default.svc.cluster.local"
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80

@@ -1,0 +1,37 @@
+replicaCount: 1
+image:
+  repository: public.ecr.aws/w0f5g4k6/hello-svc
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 80
+  name: hello
+ingress:
+  enabled: true
+  className: "eks-auto-alb"
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /hello
+  hosts:
+    - host: hello.com
+      paths:
+        - path: /hello
+          pathType: Prefix
+livenessProbe:
+  httpGet:
+    path: /hello
+    port: http
+readinessProbe:
+  httpGet:
+    path: /hello
+    port: http
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+

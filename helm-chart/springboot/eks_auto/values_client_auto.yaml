@@ -1,0 +1,39 @@
+replicaCount: 1
+image:
+  repository: public.ecr.aws/w0f5g4k6/client-svc
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  name: client
+  port: 80
+ingress:
+  enabled: true
+  className: "eks-auto-alb"
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /
+  hosts:
+    - host: client.com
+      paths:
+        - path: /
+          pathType: Prefix
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+env:
+  HELLO_SERVICE_URL: "http://hello.default.svc.cluster.local"
+  WORLD_SERVICE_URL: "http://world.default.svc.cluster.local"

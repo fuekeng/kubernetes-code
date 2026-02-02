@@ -1,0 +1,58 @@
+EKS cluster created 
+1. Update IAM role with oidc provider
+2. aws eks --region us-east-1 update-kubeconfig --name eks-1
+3. kubectl apply -f service_account.yaml
+
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update eks
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=eks-1 \
+  --set serviceAccount.create=false \
+  --set region=us-east-1 \
+  --set vpcId=vpc-04fb289af99df2610 \
+  --set serviceAccount.name=aws-load-balancer-controller
+
+kubectl get deployment -n kube-system aws-load-balancer-controller
+
+
+helm uninstall aws-load-balancer-controller -n kube-system
+
+kubectl get events --sort-by='.metadata.creationTimestamp' | tail -n 10
+-n eks-sample-app 
+
+kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/role-arn=arn:aws:iam::936379345511:role/acct-managed/AmazonEKSLoadBalancerControllerRole
+
+    
+kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
+kubectl delete serviceaccount aws-load-balancer-controller -n kube-system
+
+helm uninstall aws-load-balancer-controller -n kube-system
+
+kubectl logs -f deployment/aws-load-balancer-controller -n kube-system
+
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+
+kubectl exec -it aws-load-balancer-controller-577d7f46d5-49w87 -n kube-system -- cat /var/run/secrets/eks.amazonaws.com/serviceaccount/token
+
+aws eks --region us-east-1 update-kubeconfig --name test
+
+kubectl run -i \
+    --tty load-generator \
+    --rm --image=busybox \
+    --restart=Never \
+    -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://k8s-game2048-ingress2-2d00d5bb4b-1483018925.us-east-1.elb.amazonaws.com/; done"
+
+
+
+autoscaling
+aws ecr-public get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin public.ecr.aws
+
+helm install -f values.yaml retail-store-app oci://public.ecr.aws/aws-containers/retail-store-sample-chart --version 0.8.3
+
+
+helm install aws-load-balancer-controller aws-load-balancer-controller \
+ --namespace kube-system --set clusterName=eks-1 \ --set region=us-east-1 \
+  --set serviceAccount.create=true \ 
+  --set serviceAccount.name=aws-load-balancer-controller \ 
+  --set serviceAccount.annotations."eks.amazonaws.com/role-arn"="arn:aws:iam::936379345511:role/eks-alb-ingress-controller

@@ -1,0 +1,40 @@
+replicaCount: 1
+image:
+  repository: public.ecr.aws/w0f5g4k6/world-svc
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 80
+  name: world
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /world
+    alb.ingress.kubernetes.io/group.name: myapp
+  hosts:
+    - host: world.com
+      paths:
+        - path: /world
+          pathType: Prefix
+livenessProbe:
+  httpGet:
+    path: /world
+    port: http
+readinessProbe:
+  httpGet:
+    path: /world
+    port: http
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+

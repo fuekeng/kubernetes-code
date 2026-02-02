@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: load-generator
+  namespace: game-2048
+spec:
+  containers:
+    - name: stress
+      image: progrium/stress
+      resources:
+        requests:
+          cpu: 500m   # Request 0.5 CPU core
+        limits:
+          cpu: 1000m  # Limit to 1 CPU core
+      command:
+        - stress
+        - --cpu
+        - "1"     # Generate CPU load on 1 core
+        - --timeout
+        - "600s"  # Run the stress test for 10 minutes (600 seconds)

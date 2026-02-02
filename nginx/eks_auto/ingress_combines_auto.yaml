@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: eks-sample-app
+  name: ingress-service
+  annotations:
+spec:
+  ingressClassName: eks-auto-alb
+  rules:
+    - host: nginx.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: eks-sample-linux-service
+              port:
+                number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: game-service-ingress
+  namespace: game-2048
+spec:
+  ingressClassName: eks-auto-alb
+  rules:
+    - host: game.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service-2048
+                port:
+                  number: 80
