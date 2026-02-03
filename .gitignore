@@ -1,26 +1,2 @@
-# Terraform state files
-*.tfstate
-*.tfstate.*
-
-# Crash log files
-crash.log
-.DS_Store
-# Terraform variables files
-*.tfvars
-*.tfvars.json
-
-# Override files
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
-
-# Provider override directory
-.terraform
-
-# Provider configuration directory
-.terraformrc
-terraform.rc
-
-# Lock files
-*.lock.hcl
+.DS_store
+../target/*
